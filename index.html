@@ -491,8 +491,8 @@
       concurso:      "2820",
       dataSorteio:   "2026-05-24",          // formato AAAA-MM-DD
       valorCota:     10.00,
-      totalCotas:    30,
-      cotasVendidas: 12,
+      totalCotas:    100,
+      cotasVendidas: 10,
       status:        "aberto",
     },
     {
@@ -501,9 +501,9 @@
       concurso:      "3355",
       dataSorteio:   "2026-05-22",
       valorCota:     8.00,
-      totalCotas:    20,
-      cotasVendidas: 20,
-      status:        "encerrado",
+      totalCotas:    15,
+      cotasVendidas: 05,
+      status:        "aberto",
     },
     {
       id: "quina-001",
@@ -512,7 +512,7 @@
       dataSorteio:   "2026-05-23",
       valorCota:     5.00,
       totalCotas:    25,
-      cotasVendidas: 8,
+      cotasVendidas: 10,
       status:        "aberto",
     },
   ];
@@ -524,7 +524,7 @@
 ══════════════════════════════════ -->
 
 <header>
-  <h1>🍀 Bolão da Sorte</h1>
+  <h1>🍀 Angelo - Bolões da CEF</h1>
   <p id="subtitulo">Organizado por <strong id="nome-org"></strong></p>
   <span class="header-badge">Apenas jogo oficial CEF</span>
 </header>
@@ -678,6 +678,18 @@
       <div class="pix-info">
         <div class="pix-title">🔑 Chave PIX para pagamento</div>
         <div class="pix-key" id="f-pix-key"></div>
+        <button onclick="copiarPix()" id="btn-copiar-pix" style="
+          margin-top: 10px;
+          width: 100%;
+          padding: 10px;
+          background: #166534;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          font-size: .88rem;
+          font-weight: 700;
+          cursor: pointer;
+        ">📋 Copiar chave PIX</button>
       </div>
 
       <button class="btn btn-dark" id="btn-inscrever" onclick="inscrever()">
@@ -840,6 +852,22 @@
     const cotas = parseInt(document.getElementById("f-cotas").value);
     const total = cotas * bolaoAtivo.valorCota;
     document.getElementById("f-total").textContent = fmt(total);
+  }
+
+  // ── Copiar PIX ──
+  function copiarPix() {
+    const chave = CONFIG.chavePix;
+    navigator.clipboard.writeText(chave).then(() => {
+      const btn = document.getElementById("btn-copiar-pix");
+      btn.textContent = "✅ Chave copiada!";
+      btn.style.background = "#14532d";
+      setTimeout(() => {
+        btn.textContent = "📋 Copiar chave PIX";
+        btn.style.background = "#166534";
+      }, 2500);
+    }).catch(() => {
+      alert("Chave PIX: " + chave);
+    });
   }
 
   // ── Inscrição ──
