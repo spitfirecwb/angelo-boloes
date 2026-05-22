@@ -908,13 +908,13 @@
 
     // Monta mensagem WhatsApp
     const msg = encodeURIComponent(
-      `Olá! Quero participar do bolão:\n\n` +
+      `Olá! Vou participar deste bolão:\n\n` +
       `📋 *${bolaoAtivo.loteria}* — Concurso ${bolaoAtivo.concurso}\n` +
       `👤 Nome: ${nome}\n` +
       `📱 Tel: ${tel}\n` +
       `🎟️ Cotas: ${cotas}\n` +
       `💰 Valor: ${fmt(total)}\n\n` +
-      `Segue o comprovante do PIX:`
+      `Já realizei o PIX!`
     );
 
     document.getElementById("wpp-link").href = `https://wa.me/${CONFIG.telefoneWpp}?text=${msg}`;
