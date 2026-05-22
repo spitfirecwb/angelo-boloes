@@ -640,7 +640,7 @@
 
       <div class="form-group">
         <label>Telefone / WhatsApp</label>
-        <input type="tel" id="f-tel" placeholder="(41) 99999-9999" autocomplete="tel" />
+        <input type="tel" id="f-tel" placeholder="41-99999-9999" autocomplete="tel" maxlength="13" oninput="mascaraTelefone(this)" />
       </div>
 
       <div class="cotas-row">
@@ -832,6 +832,18 @@
     const cotas = parseInt(document.getElementById("f-cotas").value);
     const total = cotas * bolaoAtivo.valorCota;
     document.getElementById("f-total").textContent = fmt(total);
+  }
+
+  function mascaraTelefone(input) {
+    let v = input.value.replace(/\D/g, ''); // remove tudo que não é número
+    if (v.length > 11) v = v.slice(0, 11);  // limita a 11 dígitos
+    if (v.length <= 2) {
+      input.value = v;
+    } else if (v.length <= 7) {
+      input.value = v.slice(0,2) + '-' + v.slice(2);
+    } else {
+      input.value = v.slice(0,2) + '-' + v.slice(2,7) + '-' + v.slice(7);
+    }
   }
 
   function copiarPix() {
