@@ -68,8 +68,8 @@
     nav::-webkit-scrollbar { display: none; }
     nav button {
       flex: 1;
-      min-width: 100px;
-      padding: 14px 8px;
+      min-width: 80px;
+      padding: 12px 6px;
       border: none;
       background: none;
       font-size: .85rem;
@@ -83,6 +83,13 @@
     nav button.active {
       color: var(--text);
       border-bottom-color: #1a1a2e;
+    }
+    @media (max-width: 480px) {
+      nav button {
+        font-size: .72rem;
+        padding: 11px 4px;
+        min-width: 70px;
+      }
     }
 
     /* ── Main ── */
@@ -467,29 +474,19 @@
      CONFIGURAÇÃO — edite aqui
 ══════════════════════════════════ -->
 <script>
-  // ┌──────────────────────────────────────────────────────────────────┐
-  // │  CONFIGURAÇÕES DO ORGANIZADOR — edite apenas este bloco         │
-  // └──────────────────────────────────────────────────────────────────┘
-
   const CONFIG = {
-    nomeOrganizador:  "Angelo Rodrigo Pereira", // seu nome que aparece no topo
-    chavePix:         "41 99747-7567",         // sua chave PIX
-    telefoneWpp:      "5541997477567",         // seu WhatsApp com DDI+DDD (sem espaços/traços)
-
-    // URL do seu Google Apps Script (você vai preencher depois da configuração)
+    nomeOrganizador:  "Angelo Rodrigo Pereira",
+    chavePix:         "41 99978-5821",
+    telefoneWpp:      "5541999785821",
     appsScriptUrl:    "https://script.google.com/macros/s/AKfycbyqqxTCC0godMAo7SaIoQWrti_IXKbEoDJQu9KNaJhHPVyNfDdLmDZZ2Erw0bS-pl-N/exec",
   };
 
-  // ┌──────────────────────────────────────────────────────────────────┐
-  // │  BOLÕES — edite para adicionar, remover ou fechar bolões        │
-  // │  Status: "aberto" | "encerrado"                                 │
-  // └──────────────────────────────────────────────────────────────────┘
   const BOLOES = [
     {
       id: "mega-001",
       loteria:       "Mega-Sena",
       concurso:      "2820",
-      dataSorteio:   "2026-05-24",          // formato AAAA-MM-DD
+      dataSorteio:   "2026-05-24",
       valorCota:     10.00,
       totalCotas:    100,
       cotasVendidas: 10,
@@ -502,7 +499,7 @@
       dataSorteio:   "2026-05-22",
       valorCota:     8.00,
       totalCotas:    15,
-      cotasVendidas: 05,
+      cotasVendidas: 5,
       status:        "aberto",
     },
     {
@@ -516,12 +513,7 @@
       status:        "aberto",
     },
   ];
-  // ────────────────────────────────────────────────────────────────────
 </script>
-
-<!-- ══════════════════════════════════
-     HTML
-══════════════════════════════════ -->
 
 <header>
   <h1>🍀 Angelo - Bolões da CEF</h1>
@@ -558,15 +550,15 @@
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
-          <h4>Confirme no WhatsApp</h4>
-          <p>Após preencher o formulário, um link abre o WhatsApp com a mensagem pronta. Envie para confirmar sua vaga.</p>
+          <h4>Pague via PIX</h4>
+          <p>Faça o PIX para a chave informada no formulário. A vaga é confirmada somente após o pagamento.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h4>Pague via PIX</h4>
-          <p>Faça o PIX para a chave informada no formulário. A vaga é confirmada somente após o pagamento.</p>
+          <h4>Confirme no WhatsApp</h4>
+          <p>Após preencher o formulário, um link abre o WhatsApp com a mensagem pronta. Envie para confirmar sua vaga.</p>
         </div>
       </div>
       <div class="step">
@@ -631,9 +623,7 @@
 
 </main>
 
-<!-- ══════════════════════════════════
-     MODAL DE INSCRIÇÃO
-══════════════════════════════════ -->
+<!-- MODAL DE INSCRIÇÃO -->
 <div class="overlay" id="overlay" onclick="fecharModal(event)">
   <div class="modal" id="modal">
     <div class="modal-handle"></div>
@@ -714,14 +704,8 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════ -->
 <script>
-  // ── Estado ──
   let bolaoAtivo = null;
-
-  // ── Helpers ──
   const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
   function diasParaSorteio(dataStr) {
@@ -756,11 +740,9 @@
     return `${d}/${m}/${y}`;
   }
 
-  // ── Renderiza os bolões ──
   function renderBoloes() {
     const container = document.getElementById("lista-boloes");
     container.innerHTML = "";
-
     const abertos    = BOLOES.filter(b => b.status === "aberto");
     const encerrados = BOLOES.filter(b => b.status === "encerrado");
 
@@ -816,7 +798,6 @@
     });
   }
 
-  // ── Modal ──
   function abrirModal(bolao) {
     bolaoAtivo = bolao;
     document.getElementById("form-wrap").style.display    = "block";
@@ -827,7 +808,6 @@
     document.getElementById("f-pix-key").textContent      = CONFIG.chavePix;
     document.getElementById("f-cotas").value              = "1";
 
-    // limita cotas disponíveis
     const restando = bolao.totalCotas - bolao.cotasVendidas;
     const sel = document.getElementById("f-cotas");
     sel.innerHTML = "";
@@ -854,7 +834,6 @@
     document.getElementById("f-total").textContent = fmt(total);
   }
 
-  // ── Copiar PIX ──
   function copiarPix() {
     const chave = CONFIG.chavePix;
     navigator.clipboard.writeText(chave).then(() => {
@@ -870,7 +849,6 @@
     });
   }
 
-  // ── Inscrição ──
   async function inscrever() {
     const nome  = document.getElementById("f-nome").value.trim();
     const tel   = document.getElementById("f-tel").value.trim();
@@ -894,19 +872,14 @@
       valorTotal: total,
     };
 
-    // Tenta gravar no Apps Script (se URL configurada)
     if (CONFIG.appsScriptUrl && CONFIG.appsScriptUrl !== "COLE_AQUI_A_URL_DO_APPS_SCRIPT") {
       try {
-        await fetch(CONFIG.appsScriptUrl, {
-          method: "POST",
-          body: JSON.stringify(payload),
-        });
+        await fetch(CONFIG.appsScriptUrl, { method: "POST", body: JSON.stringify(payload) });
       } catch(err) {
         console.warn("Apps Script não respondeu:", err);
       }
     }
 
-    // Monta mensagem WhatsApp
     const msg = encodeURIComponent(
       `Olá! Vou participar deste bolão:\n\n` +
       `📋 *${bolaoAtivo.loteria}* — Concurso ${bolaoAtivo.concurso}\n` +
@@ -925,7 +898,6 @@
     btn.disabled    = false;
   }
 
-  // ── Saldo ──
   function consultarSaldo() {
     const tel = document.getElementById("saldo-tel").value.trim();
     if (!tel || tel.length < 8) { alert("Informe seu telefone."); return; }
@@ -949,7 +921,6 @@
       </div>`;
   }
 
-  // ── Tabs ──
   function showTab(id, btn) {
     ["boloes","como-funciona","regras","saldo"].forEach(t => {
       document.getElementById("tab-" + t).style.display = (t === id) ? "block" : "none";
@@ -958,10 +929,8 @@
     if (btn) btn.classList.add("active");
   }
 
-  // ── Init ──
   document.getElementById("nome-org").textContent = CONFIG.nomeOrganizador;
 
-  // Fechar modal com ESC
   document.addEventListener("keydown", e => {
     if (e.key === "Escape") fecharModal();
   });
