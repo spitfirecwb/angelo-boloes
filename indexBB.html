@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angelo - Bolões da CEF</title>
+  <style>
+    :root {
+      --mega:    #209869;
+      --mega-d:  #166b4a;
+      --loto:    #930089;
+      --loto-d:  #660060;
+      --quina:   #260085;
+      --quina-d: #1a005c;
+      --dupla:   #e8000f;
+      --dupla-d: #b0000b;
+      --bg:      #f4f6f9;
+      --card-bg: #ffffff;
+      --text:    #1a1a2e;
+      --muted:   #6b7280;
+      --border:  #e5e7eb;
+      --radius:  14px;
+      --shadow:  0 2px 16px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 20px 24px 24px;
+      text-align: center;
+      position: relative;
+    }
+    header h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px; }
+    header p  { font-size: .9rem; opacity: .75; margin-top: 4px; }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: .75rem;
+      margin-top: 10px;
+      letter-spacing: .5px;
+    }
+
+    /* ── Nav tabs ── */
+    nav {
+      display: flex;
+      background: #fff;
+      border-bottom: 2px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    nav::-webkit-scrollbar { display: none; }
+    nav button {
+      flex: 1;
+      min-width: 80px;
+      padding: 12px 6px;
+      border: none;
+      background: none;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    nav button.active {
+      color: var(--text);
+      border-bottom-color: #1a1a2e;
+    }
+    @media (max-width: 480px) {
+      nav button {
+        font-size: .72rem;
+        padding: 11px 4px;
+        min-width: 70px;
+      }
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+    }
+
+    /* ── Section header ── */
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin: 24px 0 12px;
+    }
+
+    /* ── Bolão card ── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .card-header {
+      padding: 16px 20px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #fff;
+    }
+    .card-header.mega  { background: linear-gradient(135deg, var(--mega), var(--mega-d)); }
+    .card-header.loto  { background: linear-gradient(135deg, var(--loto), var(--loto-d)); }
+    .card-header.quina { background: linear-gradient(135deg, var(--quina), var(--quina-d)); }
+    .card-header.dupla { background: linear-gradient(135deg, var(--dupla), var(--dupla-d)); }
+
+    .lottery-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .card-title { font-size: 1.1rem; font-weight: 800; }
+    .card-subtitle { font-size: .8rem; opacity: .85; margin-top: 2px; }
+
+    .status-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,.25);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+
+    .card-body { padding: 16px 20px; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .info-item label {
+      display: block;
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .info-item span {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* countdown */
+    .countdown {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .countdown .time { font-weight: 700; color: var(--text); }
+
+    /* progress bar */
+    .progress-wrap { margin-bottom: 16px; }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .progress-label strong { color: var(--text); }
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .5s ease;
+    }
+    .progress-fill.mega  { background: var(--mega); }
+    .progress-fill.loto  { background: var(--loto); }
+    .progress-fill.quina { background: var(--quina); }
+    .progress-fill.dupla { background: var(--dupla); }
+
+    /* btn */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-mega  { background: var(--mega);  color: #fff; }
+    .btn-loto  { background: var(--loto);  color: #fff; }
+    .btn-quina { background: var(--quina); color: #fff; }
+    .btn-dupla { background: var(--dupla); color: #fff; }
+    .btn-disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
+
+    /* encerrado overlay */
+    .card.encerrado { opacity: .7; }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--muted);
+    }
+    .empty .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty p { font-size: .9rem; }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: #1a1a2e;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Modal overlay ── */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 200;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 680px;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px 24px 40px;
+      animation: slideUp .3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      margin: 0 auto 20px;
+    }
+
+    .modal h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+    .modal .modal-sub { font-size: .85rem; color: var(--muted); margin-bottom: 20px; }
+
+    /* form */
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: .95rem;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus { border-color: #1a1a2e; }
+
+    .cotas-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .valor-total-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .valor-total-box .label { font-size: .85rem; color: var(--muted); }
+    .valor-total-box .value { font-size: 1.3rem; font-weight: 800; }
+
+    .pix-info {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .pix-info .pix-title {
+      font-size: .82rem;
+      font-weight: 700;
+      color: #166534;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-bottom: 6px;
+    }
+    .pix-key {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #166534;
+      word-break: break-all;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: var(--border);
+      border: none;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* success state */
+    .success-box {
+      text-align: center;
+      padding: 10px 0 16px;
+    }
+    .success-box .check { font-size: 3rem; margin-bottom: 12px; }
+    .success-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+    .success-box p  { font-size: .88rem; color: var(--muted); margin-bottom: 20px; }
+
+    .btn-wpp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 10px;
+    }
+
+    /* ── Como funciona ── */
+    .steps { display: flex; flex-direction: column; gap: 14px; }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #1a1a2e;
+      color: #fff;
+      font-weight: 800;
+      font-size: .9rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body h4 { font-size: .95rem; font-weight: 700; margin-bottom: 3px; }
+    .step-body p  { font-size: .83rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Regras ── */
+    .rules-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      font-size: .88rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .rules-card h4 { font-size: .95rem; font-weight: 700; margin: 14px 0 6px; }
+    .rules-card h4:first-child { margin-top: 0; }
+
+    /* ── Saldo ── */
+    .saldo-form {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .saldo-form p { font-size: .88rem; color: var(--muted); margin-bottom: 16px; }
+    .btn-dark {
+      background: #1a1a2e;
+      color: #fff;
+    }
+
+    /* responsive */
+    @media (max-width: 400px) {
+      .info-grid { grid-template-columns: 1fr 1fr; }
+      .modal { padding: 20px 16px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     CONFIGURAÇÃO — edite aqui
+══════════════════════════════════ -->
+<script>
+  const CONFIG = {
+    nomeOrganizador:  "Angelo Rodrigo Pereira",
+    chavePix:         "41997477567",
+    telefoneWpp:      "5541997477567",
+    appsScriptUrl:    "https://script.google.com/macros/s/AKfycbyqqxTCC0godMAo7SaIoQWrti_IXKbEoDJQu9KNaJhHPVyNfDdLmDZZ2Erw0bS-pl-N/exec",
+  };
+
+  const BOLOES = [
+    {
+      id: "mega-001",
+      loteria:       "Mega-Sena",
+      concurso:      "2820",
+      dataSorteio:   "2026-05-24",
+      valorCota:     10.00,
+      totalCotas:    100,
+      cotasVendidas: 10,
+      status:        "aberto",
+    },
+    {
+      id: "loto-001",
+      loteria:       "Lotofácil",
+      concurso:      "3355",
+      dataSorteio:   "2026-05-22",
+      valorCota:     8.00,
+      totalCotas:    15,
+      cotasVendidas: 5,
+      status:        "aberto",
+    },
+    {
+      id: "quina-001",
+      loteria:       "Quina",
+      concurso:      "6650",
+      dataSorteio:   "2026-05-23",
+      valorCota:     5.00,
+      totalCotas:    25,
+      cotasVendidas: 10,
+      status:        "aberto",
+    },
+  ];
+</script>
+
+<header>
+  <h1>🍀 Angelo - Bolões da CEF</h1>
+  <p id="subtitulo">Organizado por <strong id="nome-org"></strong></p>
+  <span class="header-badge">Apenas jogo oficial CEF</span>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('boloes', this)">🎱 Bolões</button>
+  <button onclick="showTab('como-funciona', this)">📋 Como funciona</button>
+  <button onclick="showTab('regras', this)">📜 Regras</button>
+  <button onclick="showTab('saldo', this)">💰 Meu saldo</button>
+</nav>
+
+<main>
+
+  <!-- TAB: Bolões -->
+  <div id="tab-boloes">
+    <p class="section-title">Bolões disponíveis</p>
+    <div id="lista-boloes"></div>
+  </div>
+
+  <!-- TAB: Como funciona -->
+  <div id="tab-como-funciona" style="display:none">
+    <p class="section-title">Passo a passo</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Escolha o bolão</h4>
+          <p>Veja os bolões abertos, o valor da cota e quantas vagas restam. Clique em "Quero participar".</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Pague via PIX</h4>
+          <p>Faça o PIX para a chave informada no formulário. A vaga é confirmada somente após o pagamento.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Confirme no WhatsApp</h4>
+          <p>Após preencher o formulário, um link abre o WhatsApp com a mensagem pronta. Envie para confirmar sua vaga.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Aguarde o resultado</h4>
+          <p>O organizador faz as apostas na lotérica e divulga o resultado no grupo do WhatsApp após o sorteio.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Receba ou acumule</h4>
+          <p>Prêmios são divididos proporcionalmente às cotas. Você pode deixar seu prêmio como saldo para o próximo bolão.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Regras -->
+  <div id="tab-regras" style="display:none">
+    <p class="section-title">Regras do bolão</p>
+    <div class="rules-card">
+      <h4>📌 Participação</h4>
+      <p>O bolão é restrito a membros do grupo. Cada cota dá direito a uma participação proporcional no prêmio. É possível comprar mais de uma cota por pessoa.</p>
+
+      <h4>💸 Pagamento</h4>
+      <p>O pagamento é feito exclusivamente via PIX. A vaga só é garantida após a confirmação do pagamento pelo organizador. Não há reserva de vaga sem pagamento.</p>
+
+      <h4>🎟️ Apostas</h4>
+      <p>As apostas são feitas em lotérica credenciada pela CEF. Após feitas, o comprovante é divulgado no grupo do WhatsApp.</p>
+
+      <h4>🏆 Premiação</h4>
+      <p>Em caso de prêmio, o valor líquido (após desconto do IR quando aplicável) é dividido proporcionalmente ao número de cotas de cada participante.</p>
+
+      <h4>💰 Saldo</h4>
+      <p>O participante pode optar por deixar o prêmio como saldo para uso em bolões futuros. Saques de saldo são combinados diretamente com o organizador.</p>
+
+      <h4>⏰ Prazo</h4>
+      <p>O prazo de inscrição e pagamento é até 2 horas antes do sorteio. Após esse prazo, as vagas não confirmadas são liberadas.</p>
+    </div>
+  </div>
+
+  <!-- TAB: Saldo -->
+  <div id="tab-saldo" style="display:none">
+    <p class="section-title">Consultar meu saldo</p>
+    <div class="saldo-form">
+      <p>Digite seu telefone (o mesmo cadastrado nas inscrições) para verificar seu saldo disponível.</p>
+      <div class="form-group">
+        <label>Seu telefone (WhatsApp)</label>
+        <input type="tel" id="saldo-tel" placeholder="(41) 99999-9999" />
+      </div>
+      <button class="btn btn-dark" onclick="consultarSaldo()">Consultar saldo</button>
+      <div id="saldo-resultado" style="margin-top:16px; display:none"></div>
+    </div>
+    <br>
+    <div class="rules-card" style="margin-top: 0; background: #fffbeb; border-color: #fcd34d;">
+      <h4>ℹ️ Sobre o saldo</h4>
+      <p>O saldo é atualizado pelo organizador após cada sorteio. Em caso de dúvidas, entre em contato diretamente pelo WhatsApp.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL DE INSCRIÇÃO -->
+<div class="overlay" id="overlay" onclick="fecharModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+
+    <!-- Formulário -->
+    <div id="form-wrap">
+      <h2 id="modal-titulo">Participar do Bolão</h2>
+      <p class="modal-sub" id="modal-sub"></p>
+
+      <div class="form-group">
+        <label>Seu nome completo</label>
+        <input type="text" id="f-nome" placeholder="Ex: Maria Silva" autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label>Telefone / WhatsApp</label>
+        <input type="tel" id="f-tel" placeholder="41-99999-9999" autocomplete="tel" maxlength="13" oninput="mascaraTelefone(this)" />
+      </div>
+
+      <div class="cotas-row">
+        <div class="form-group">
+          <label>Quantidade de cotas</label>
+          <select id="f-cotas" onchange="atualizarTotal()">
+            <option value="1">1 cota</option>
+            <option value="2">2 cotas</option>
+            <option value="3">3 cotas</option>
+            <option value="4">4 cotas</option>
+            <option value="5">5 cotas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Valor por cota</label>
+          <input type="text" id="f-valor-unit" readonly style="background:#f9f9f9; font-weight:700;" />
+        </div>
+      </div>
+
+      <div class="valor-total-box">
+        <span class="label">Total a pagar via PIX</span>
+        <span class="value" id="f-total">R$ 0,00</span>
+      </div>
+
+      <div class="pix-info">
+        <div class="pix-title">🔑 Chave PIX para pagamento</div>
+        <div class="pix-key" id="f-pix-key"></div>
+        <button onclick="copiarPix()" id="btn-copiar-pix" style="
+          margin-top: 10px;
+          width: 100%;
+          padding: 10px;
+          background: #166534;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          font-size: .88rem;
+          font-weight: 700;
+          cursor: pointer;
+        ">📋 Copiar chave PIX</button>
+      </div>
+
+      <button class="btn btn-dark" id="btn-inscrever" onclick="inscrever()">
+        Confirmar inscrição →
+      </button>
+    </div>
+
+    <!-- Sucesso -->
+    <div id="success-wrap" style="display:none">
+      <div class="success-box">
+        <div class="check">✅</div>
+        <h3>Inscrição registrada!</h3>
+        <p>Agora envie o comprovante do PIX pelo WhatsApp para confirmar sua vaga. Sem o pagamento a vaga não é garantida.</p>
+        <a id="wpp-link" class="btn-wpp" target="_blank">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 0C5.373 0 0 5.373 0 12c0 2.117.554 4.107 1.523 5.83L.057 23.569a.5.5 0 0 0 .611.61l5.805-1.466A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.807 9.807 0 0 1-5.003-1.373l-.359-.213-3.72.94.982-3.618-.234-.372A9.781 9.781 0 0 1 2.182 12c0-5.42 4.398-9.818 9.817-9.818 5.42 0 9.818 4.398 9.818 9.818 0 5.42-4.398 9.818-9.818 9.818z"/></svg>
+          Enviar comprovante no WhatsApp
+        </a>
+        <button class="btn" style="background:var(--border);color:var(--muted)" onclick="fecharModal()">Fechar</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let bolaoAtivo = null;
+  const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  function diasParaSorteio(dataStr) {
+    const hoje = new Date();
+    hoje.setHours(0,0,0,0);
+    const sorteio = new Date(dataStr + 'T00:00:00');
+    const diff = Math.round((sorteio - hoje) / 86400000);
+    if (diff < 0)  return "Sorteio realizado";
+    if (diff === 0) return "Sorteio hoje! 🎉";
+    if (diff === 1) return "Sorteio amanhã";
+    return `Sorteio em ${diff} dias`;
+  }
+
+  function classeCSS(loteria) {
+    if (loteria.includes("Mega"))   return "mega";
+    if (loteria.includes("Loto"))   return "loto";
+    if (loteria.includes("Quina"))  return "quina";
+    if (loteria.includes("Dupla"))  return "dupla";
+    return "mega";
+  }
+
+  function emoji(loteria) {
+    if (loteria.includes("Mega"))   return "🟢";
+    if (loteria.includes("Loto"))   return "🟣";
+    if (loteria.includes("Quina"))  return "🔵";
+    if (loteria.includes("Dupla"))  return "🔴";
+    return "🎱";
+  }
+
+  function formatDate(dataStr) {
+    const [y,m,d] = dataStr.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function renderBoloes() {
+    const container = document.getElementById("lista-boloes");
+    container.innerHTML = "";
+    const abertos    = BOLOES.filter(b => b.status === "aberto");
+    const encerrados = BOLOES.filter(b => b.status === "encerrado");
+
+    if (abertos.length === 0 && encerrados.length === 0) {
+      container.innerHTML = `<div class="empty"><div class="icon">🎱</div><p>Nenhum bolão disponível no momento.<br>Aguarde novidades no grupo!</p></div>`;
+      return;
+    }
+
+    [...abertos, ...encerrados].forEach(b => {
+      const css      = classeCSS(b.loteria);
+      const restando = b.totalCotas - b.cotasVendidas;
+      const pct      = Math.min(100, Math.round((b.cotasVendidas / b.totalCotas) * 100));
+      const aberto   = b.status === "aberto";
+
+      const card = document.createElement("div");
+      card.className = "card" + (aberto ? "" : " encerrado");
+      card.innerHTML = `
+        <div class="card-header ${css}">
+          <div class="lottery-icon">${emoji(b.loteria)}</div>
+          <div>
+            <div class="card-title">${b.loteria}</div>
+            <div class="card-subtitle">Concurso ${b.concurso}</div>
+          </div>
+          <span class="status-badge">${aberto ? "● Aberto" : "Encerrado"}</span>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Valor da cota</label>
+              <span>${fmt(b.valorCota)}</span>
+            </div>
+            <div class="info-item">
+              <label>Data do sorteio</label>
+              <span>${formatDate(b.dataSorteio)}</span>
+            </div>
+          </div>
+          <div class="countdown">⏳ <span class="time">${diasParaSorteio(b.dataSorteio)}</span></div>
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span>Cotas vendidas: <strong>${b.cotasVendidas}/${b.totalCotas}</strong></span>
+              <span>${restando > 0 ? restando + " restando" : "Esgotado"}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill ${css}" style="width:${pct}%"></div>
+            </div>
+          </div>
+          ${aberto && restando > 0
+            ? `<button class="btn btn-${css}" onclick='abrirModal(${JSON.stringify(b)})'>Quero participar →</button>`
+            : `<div class="btn btn-disabled">${aberto ? "Esgotado" : "Encerrado"}</div>`
+          }
+        </div>`;
+      container.appendChild(card);
+    });
+  }
+
+  function abrirModal(bolao) {
+    bolaoAtivo = bolao;
+    document.getElementById("form-wrap").style.display    = "block";
+    document.getElementById("success-wrap").style.display = "none";
+    document.getElementById("modal-titulo").textContent   = "Participar — " + bolao.loteria;
+    document.getElementById("modal-sub").textContent      = "Concurso " + bolao.concurso + " · Sorteio " + formatDate(bolao.dataSorteio);
+    document.getElementById("f-valor-unit").value         = fmt(bolao.valorCota);
+    document.getElementById("f-pix-key").textContent      = CONFIG.chavePix;
+    document.getElementById("f-cotas").value              = "1";
+
+    const restando = bolao.totalCotas - bolao.cotasVendidas;
+    const sel = document.getElementById("f-cotas");
+    sel.innerHTML = "";
+    for (let i = 1; i <= Math.min(5, restando); i++) {
+      sel.innerHTML += `<option value="${i}">${i} cota${i>1?"s":""}</option>`;
+    }
+
+    atualizarTotal();
+    document.getElementById("overlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function fecharModal(e) {
+    if (e && e.target !== document.getElementById("overlay")) return;
+    document.getElementById("overlay").classList.remove("open");
+    document.body.style.overflow = "";
+    bolaoAtivo = null;
+  }
+
+  function atualizarTotal() {
+    if (!bolaoAtivo) return;
+    const cotas = parseInt(document.getElementById("f-cotas").value);
+    const total = cotas * bolaoAtivo.valorCota;
+    document.getElementById("f-total").textContent = fmt(total);
+  }
+
+  function mascaraTelefone(input) {
+    let v = input.value.replace(/\D/g, ''); // remove tudo que não é número
+    if (v.length > 11) v = v.slice(0, 11);  // limita a 11 dígitos
+    if (v.length <= 2) {
+      input.value = v;
+    } else if (v.length <= 7) {
+      input.value = v.slice(0,2) + '-' + v.slice(2);
+    } else {
+      input.value = v.slice(0,2) + '-' + v.slice(2,7) + '-' + v.slice(7);
+    }
+  }
+
+  function copiarPix() {
+    const chave = CONFIG.chavePix;
+    navigator.clipboard.writeText(chave).then(() => {
+      const btn = document.getElementById("btn-copiar-pix");
+      btn.textContent = "✅ Chave copiada!";
+      btn.style.background = "#14532d";
+      setTimeout(() => {
+        btn.textContent = "📋 Copiar chave PIX";
+        btn.style.background = "#166534";
+      }, 2500);
+    }).catch(() => {
+      alert("Chave PIX: " + chave);
+    });
+  }
+
+  async function inscrever() {
+    const nome  = document.getElementById("f-nome").value.trim();
+    const tel   = document.getElementById("f-tel").value.trim();
+    const cotas = parseInt(document.getElementById("f-cotas").value);
+
+    if (!nome || nome.length < 3) { alert("Por favor, informe seu nome completo."); return; }
+    if (!tel  || tel.length  < 8) { alert("Por favor, informe seu telefone.");      return; }
+
+    const total = cotas * bolaoAtivo.valorCota;
+    const btn   = document.getElementById("btn-inscrever");
+    btn.textContent = "Enviando...";
+    btn.disabled    = true;
+
+    const payload = {
+      nome,
+      telefone: tel,
+      bolaoId:  bolaoAtivo.id,
+      loteria:  bolaoAtivo.loteria,
+      concurso: bolaoAtivo.concurso,
+      cotas,
+      valorTotal: total,
+    };
+
+    if (CONFIG.appsScriptUrl && CONFIG.appsScriptUrl !== "COLE_AQUI_A_URL_DO_APPS_SCRIPT") {
+      try {
+        await fetch(CONFIG.appsScriptUrl, { method: "POST", body: JSON.stringify(payload) });
+      } catch(err) {
+        console.warn("Apps Script não respondeu:", err);
+      }
+    }
+
+    const msg = encodeURIComponent(
+      `Olá! Vou participar deste bolão:\n\n` +
+      `📋 *${bolaoAtivo.loteria}* — Concurso ${bolaoAtivo.concurso}\n` +
+      `👤 Nome: ${nome}\n` +
+      `📱 Tel: ${tel}\n` +
+      `🎟️ Cotas: ${cotas}\n` +
+      `💰 Valor: ${fmt(total)}\n\n` +
+      `Já realizei o PIX!`
+    );
+
+    document.getElementById("wpp-link").href = `https://wa.me/${CONFIG.telefoneWpp}?text=${msg}`;
+    document.getElementById("form-wrap").style.display    = "none";
+    document.getElementById("success-wrap").style.display = "block";
+
+    btn.textContent = "Confirmar inscrição →";
+    btn.disabled    = false;
+  }
+
+  function consultarSaldo() {
+    const tel = document.getElementById("saldo-tel").value.trim();
+    if (!tel || tel.length < 8) { alert("Informe seu telefone."); return; }
+
+    const msg = encodeURIComponent(
+      `Olá! Gostaria de consultar meu saldo no bolão.\n` +
+      `📱 Meu telefone cadastrado: ${tel}`
+    );
+
+    const div = document.getElementById("saldo-resultado");
+    div.style.display = "block";
+    div.innerHTML = `
+      <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px;font-size:.88rem;color:#0c4a6e;">
+        <strong>Como verificar seu saldo:</strong><br><br>
+        O saldo é controlado pelo organizador. Clique abaixo para perguntar diretamente pelo WhatsApp.
+        <br><br>
+        <a href="https://wa.me/${CONFIG.telefoneWpp}?text=${msg}" target="_blank" class="btn-wpp" style="font-size:.88rem;padding:12px;margin-top:0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 0C5.373 0 0 5.373 0 12c0 2.117.554 4.107 1.523 5.83L.057 23.569a.5.5 0 0 0 .611.61l5.805-1.466A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.807 9.807 0 0 1-5.003-1.373l-.359-.213-3.72.94.982-3.618-.234-.372A9.781 9.781 0 0 1 2.182 12c0-5.42 4.398-9.818 9.817-9.818 5.42 0 9.818 4.398 9.818 9.818 0 5.42-4.398 9.818-9.818 9.818z"/></svg>
+          Perguntar saldo no WhatsApp
+        </a>
+      </div>`;
+  }
+
+  function showTab(id, btn) {
+    ["boloes","como-funciona","regras","saldo"].forEach(t => {
+      document.getElementById("tab-" + t).style.display = (t === id) ? "block" : "none";
+    });
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+  }
+
+  document.getElementById("nome-org").textContent = CONFIG.nomeOrganizador;
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") fecharModal();
+  });
+
+  renderBoloes();
+</script>
+</body>
+</html>
